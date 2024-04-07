@@ -57,7 +57,6 @@ Select an option:
     if user_input == '1':
 
 #        ---------- Getting Book Values ----------
-
         title = input("\nWhat is the title of the book you will be adding? ")
         author = input(f"\nWhat is the author of {title}? ")
         isbn = input(f"\nWhat is the isbn of {title}? ")
@@ -65,7 +64,6 @@ Select an option:
         publication_date = input(f"\nWhat is the publication date of {title}? ")
 
 #        ---------- Adding the appropriate object to the library ----------
-
         if genre.lower() == 'fantasy':
             book_obj = books.FantasyBook(title, author, isbn, publication_date)
             library['books'].append(book_obj)
@@ -98,7 +96,6 @@ Select an option:
     if user_input == '2':
 
 #        ---------- Finding the book ----------
-
         name = input("\nWhat is the name of the book you would like to borrow? ")
         username = input("\nWhat is your username? ")
         
@@ -106,7 +103,6 @@ Select an option:
             if book.title == name:
                 
 #                --- Checking if the found book is available ---
-
                 if book.get_availability_status():
                     book.set_availability_status(False)
                     input(f"\n'{name}' has been checked out, enjoy your book! ")
@@ -123,7 +119,6 @@ Select an option:
     if user_input == '3':
 
 #        ---------- Finding the book ----------
-
         name = input("\nWhat is the name of the book you would like to return? ")
         username = input("\nWhat is your username? ")
         
@@ -131,7 +126,6 @@ Select an option:
             if book.title == name:
                 
 #                --- Checking if the found book is in the library ---
-
                 if not book.get_availability_status():
                     book.set_availability_status(True)
                     input(f"\n'{name}' has been returned, time to read another book! ")
@@ -148,14 +142,12 @@ Select an option:
     if user_input == '4':
 
 #        ---------- Finding the book ----------
-
         name = input("\nWhat is the name of the book you are looking for? ")
 
         for book in library['books']:
             if book.title == name:
 
 #                --- Showing the details of the book ---
-
                 print(f'''
 
 {book.get_title()} by {book.get_author()}.
@@ -197,8 +189,59 @@ User Operations:
 Select an option: 
 '''
 )
+    
+#    <----------> Adding a new user <---------->
+
+    if user_input == '1':
+
+#        ---------- Getting Book Values ----------
+        name = input(f"\nWhat is your name? ")
+        username = input(f"\nWhat would you like your username to be? ")
+
+#        ---------- Adding the appropriate object to the library ----------
+        user_obj = User(name, username)
+        library['users'].append(user_obj)
+
+        input(f"\nCongrats {name}, you have been regeistered under the username: {username} ")
+
+#    <----------> View user details <---------->
+
+    if user_input == '2':
+
+#        ---------- Finding the user ----------
+        username = input("What is the username of the user you want to view? ")
+
+        for user in library['users']:
+            if user.get_username() == username:
+                
+#                --- Showing the details of the user ---
+                print(f'''
+
+{user.get_username()}:
+
+Name: {user.get_name()}
+Library ID: {user.get_library_id()}
+Borrowed books: ''')
+
+                for book in user.get_borrowed_books():
+                    print(book)
+                input("")
+                return
+
+            # If the user is not found
+        input(f"Sorry, no user exists under the username: '{username}'")
+
+#    <----------> Displaying all users <---------->
+
+    if user_input == '3':
+        print('\n')
+        for user in library['users']:
+            print(f"{user.get_username()}")
+        
+        input("\n")
 
 
+        
 #<====================> Author Operations <====================>
 
 def author_operations():
@@ -213,6 +256,56 @@ Author Operations:
 Select an option: 
 '''
 )
+#    <----------> Adding a new author <---------->
+
+    if user_input == '1':
+
+#        ---------- Getting author values ----------
+        name = input(f"\nWhat is the authors name? ")
+        bio = input(f"\nGive a quick biography for the author: ")
+
+#        ---------- Adding the appropriate object to the library ----------
+        author_obj = Author(name, bio)
+        library['authors'].append(author_obj)
+
+        input(f"\nThe author {name} has been added to the library! ")
+
+#    <----------> View author details <---------->
+
+    if user_input == '2':
+
+#        ---------- Finding the author ----------
+        name = input("What is the name of the author you want to view? ")
+
+        for author in library['authors']:
+            if author.get_username() == name:
+                
+#                --- Showing the details of the author ---
+                print(f'''
+
+{author.get_name()}:
+
+{author.get_bio()}
+
+Books written by this author that are in the library:
+''')
+
+                for book in author.get_written_books():
+                    print(book)
+                input("")
+                return
+
+            # If the user is not found
+        input(f"Sorry, no author exists in our library under the name: '{name}'")
+
+#    <----------> Displaying all authors <---------->
+
+    if user_input == '3':
+        print('\n')
+        for author in library['authors']:
+            print(f"{author.get_name()}")
+        
+        input("\n")
 
 
 #<====================> Function Calls <====================>

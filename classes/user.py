@@ -1,9 +1,11 @@
 # User: A class to represent library users with attributes like name, library ID, and a list of borrowed book titles.
+from random import getrandbits
 class User:
-    def __init__(self, name, library_id, borrowed_books):
+    def __init__(self, name, username):
         self.name = name
-        self.library_id = library_id
-        self.borrowed_books = borrowed_books
+        self.username = username
+        self.library_id = str(getrandbits(10000))
+        self.borrowed_books = []
     
     def get_name(self):
         return self.name
@@ -21,4 +23,10 @@ class User:
         return self.borrowed_books
     def set_borrowed_books(self, borrowed_books):
         self.borrowed_books = borrowed_books
+        return
+
+    def get_username(self):
+        return self.username
+    def set_username(self, username):
+        self.username = username
         return
