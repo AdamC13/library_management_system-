@@ -24,6 +24,10 @@ class User:
     def set_borrowed_books(self, borrowed_books):
         self.borrowed_books = borrowed_books
         return
+    def append_borrowed_book(self, book):
+        self.borrowed_books.append(book)
+    def remove_borrowed_book(self, book):
+        self.borrowed_books.remove(book)
 
     def get_username(self):
         return self.username

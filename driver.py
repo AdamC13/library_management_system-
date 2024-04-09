@@ -1,7 +1,7 @@
 from os import system
 from classes.author import Author
 from classes.user import User
-from classes import books 
+from classes import books
 
 library = {'books': [], 'authors': [], 'users': []}
 
@@ -64,54 +64,86 @@ Select an option:
         publication_date = input(f"\nWhat is the publication date of {title}? ")
 
 #        ---------- Adding the appropriate object to the library ----------
-        if genre.lower() == 'fantasy':
-            book_obj = books.FantasyBook(title, author, isbn, publication_date)
-            library['books'].append(book_obj)
-        
-        elif genre.lower() == 'fiction':
-            book_obj = books.FictionBook(title, author, isbn, publication_date)
-            library['books'].append(book_obj)
-        
-        elif genre.lower() == 'mystery':
-            book_obj = books.MysteryBook(title, author, isbn, publication_date)
-            library['books'].append(book_obj)
-        
-        elif genre.lower() == 'nonfiction':
-            book_obj = books.NonFictionBook(title, author, isbn, publication_date)
-            library['books'].append(book_obj)
-        
-        elif genre.lower() == 'sciencefiction':
-            book_obj = books.ScienceFictionBook(title, author, isbn, publication_date)
-            library['books'].append(book_obj)
-        
+
+        for auth in library['authors']: #checking for the author in our library
+            if auth.get_name() == author:
+
+                if genre.lower() == 'fantasy':
+                    book_obj = books.FantasyBook(title, author, isbn, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+                
+                elif genre.lower() == 'fiction':
+                    book_obj = books.FictionBook(title, author, isbn, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+
+                elif genre.lower() == 'mystery':
+                    book_obj = books.MysteryBook(title, author, isbn, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+                
+                elif genre.lower() == 'nonfiction':
+                    book_obj = books.NonFictionBook(title, author, isbn, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+                
+                elif genre.lower() == 'sciencefiction':
+                    book_obj = books.ScienceFictionBook(title, author, isbn, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+                
+                else:
+                    book_obj = books.Book(title, author, isbn, genre, publication_date)
+                    library['books'].append(book_obj)
+                    auth.add_book(book_obj)
+            break
+                
         else:
-            book_obj = books.Book(title, author, isbn, genre, publication_date)
-            library['books'].append(book_obj)
+            print(f"Sorry {author} is not an Auhtor in our library, please add the author first.")
         
-        print(library)
-        input("")
+        input("The book was added succesfully! ")
     
 #    <----------> Borrowing a book <---------->
 
     if user_input == '2':
 
 #        ---------- Finding the book ----------
-        name = input("\nWhat is the name of the book you would like to borrow? ")
+        title = input("\nWhat is the name of the book you would like to borrow? ")
         username = input("\nWhat is your username? ")
         
-        for book in library['books']:
-            if book.title == name:
+        username_in_library = False
+        for user in library['users']:
+            if user.get_username() == username:
+                username_in_library = True
+
+        
+        if username_in_library:
+            for book in library['books']:
+                if book.title == title:
+                    
+    #               --- Checking if the found book is available ---
+                    if book.get_availability_status():
+                        book.set_availability_status(False)
+                        
+                        for user in library['users']:
+                            if user.get_username() == username:
+                                user.append_borrowed_book(book)
+
+
+                        input(f"\n'{title}' has been checked out, enjoy your book! ")
+                        return
+                    else:
+                        input(f"\nSorry '{title}' is already checked out. ")
+                        return
+            else:
+                input(f"\nSorry we do not have '{title}'. ")
+                return
+        else:
+            input(f"Sorry {username} is not a registered user.")
+            return
+
                 
-#                --- Checking if the found book is available ---
-                if book.get_availability_status():
-                    book.set_availability_status(False)
-                    input(f"\n'{name}' has been checked out, enjoy your book! ")
-                    return
-                else:
-                    input(f"\nSorry '{name}' is already checked out. ")
-                    return
-            
-        input(f"\nSorry we do not have '{name}'. ")
 
 
 #    <----------> Returning a book <---------->
@@ -119,23 +151,38 @@ Select an option:
     if user_input == '3':
 
 #        ---------- Finding the book ----------
-        name = input("\nWhat is the name of the book you would like to return? ")
+        title = input("\nWhat is the name of the book you would like to return? ")
         username = input("\nWhat is your username? ")
+
         
-        for book in library['books']:
-            if book.title == name:
-                
-#                --- Checking if the found book is in the library ---
-                if not book.get_availability_status():
-                    book.set_availability_status(True)
-                    input(f"\n'{name}' has been returned, time to read another book! ")
-                    return
-                else:
-                    input(f"\n'{name}' has already been returned. ")
-                    return
-                
-            # If book is not found
-        input(f"\nSorry we cannot find '{name}'. Try checking the books you have checked out with the user operations menu. ")
+        
+        for user in library['users']:
+            if user.get_username() == username:
+                # if title in user.get_borrowed_books():
+                #     user.remove_borrowed_book(title)
+
+                for book in library['books']:
+                    if book.title == title:
+                        
+#                       --- Checking if the found book is in the library ---
+                        if not book.get_availability_status() and book in user.get_borrowed_books():
+                            book.set_availability_status(True)
+                            user.remove_borrowed_book(book)
+
+                            input(f"\n'{title}' has been returned, time to read another book! ")
+                            return
+                        else:
+                            input(f"\n'{username}' does not have {book.get_title()} checked out. ")
+                            return
+                        
+                    # If book is not found
+                input(f"\nSorry we cannot find '{name}'. Try checking the books you have checked out with the user operations menu. ")
+                return
+
+        else:
+            input(f"Sorry {username} is not a registered user. ")
+            return
+
 
 #    <----------> Searching for a book <---------->
 
@@ -224,7 +271,7 @@ Library ID: {user.get_library_id()}
 Borrowed books: ''')
 
                 for book in user.get_borrowed_books():
-                    print(book)
+                    print(book.get_title())
                 input("")
                 return
 
@@ -278,20 +325,20 @@ Select an option:
         name = input("What is the name of the author you want to view? ")
 
         for author in library['authors']:
-            if author.get_username() == name:
+            if author.get_name() == name:
                 
 #                --- Showing the details of the author ---
                 print(f'''
 
 {author.get_name()}:
 
-{author.get_bio()}
+{author.get_biography()}
 
 Books written by this author that are in the library:
 ''')
 
-                for book in author.get_written_books():
-                    print(book)
+                for book in author.get_books():
+                    print(book.get_title())
                 input("")
                 return
 

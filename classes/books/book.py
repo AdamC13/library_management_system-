@@ -7,6 +7,7 @@ class Book:
         self.genre = genre
         self.publication_date = publication_date
         self.availability_status = True
+        
 
     def get_title(self):
         return self.title
